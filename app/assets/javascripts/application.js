@@ -17,6 +17,7 @@
 //= require piwik
 //= require richtext
 //= require querystring
+//= require uls
 
 var querystring = require('querystring-component');
 

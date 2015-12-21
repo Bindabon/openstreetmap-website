@@ -78,4 +78,12 @@ folder 'vendor/assets' do
       file 'swfobject.js', 'swfobject/src/swfobject.js'
     end
   end
+
+  folder 'jquery.uls' do
+    from 'git://github.com/wikimedia/jquery.uls.git' do
+      folder 'css'
+      folder 'src'
+      folder 'images'
+    end
+  end
 end
