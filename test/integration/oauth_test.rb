@@ -67,7 +67,7 @@ class OAuthTest < ActionDispatch::IntegrationTest
     assert_template :authorize
 
     post "/oauth/authorize",
-         :params => { :oauth_token => token.token,
+         :params => { :oauth_token => token.token, :grant => "Grant Access",
                       :allow_read_prefs => true, :allow_write_prefs => true }
     if client.callback_url
       assert_response :redirect
@@ -117,7 +117,7 @@ class OAuthTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_template :authorize
 
-    post "/oauth/authorize", :params => { :oauth_token => token.token }
+    post "/oauth/authorize", :params => { :oauth_token => token.token, :refuse => "Refuse Access" }
     assert_response :success
     assert_template :authorize_failure
     assert_select "p", "You have denied application #{client.name} access to your account."
@@ -133,7 +133,7 @@ class OAuthTest < ActionDispatch::IntegrationTest
     assert_nil token.authorized_at
     assert_not_nil token.invalidated_at
 
-    post "/oauth/authorize", :params => { :oauth_token => token.token }
+    post "/oauth/authorize", :params => { :oauth_token => token.token, :grant => "Grant Access" }
     assert_response :success
     assert_template :authorize_failure
     assert_select "p", "The authorization token is not valid."
@@ -150,7 +150,9 @@ class OAuthTest < ActionDispatch::IntegrationTest
     assert_template :authorize
 
     post "/oauth/authorize",
-         :params => { :oauth_token => token.token, :oauth_callback => callback_url,
+         :params => { :oauth_token => token.token,
+                      :oauth_callback => callback_url,
+                      :grant => "Grant Access",
                       :allow_write_api => true, :allow_read_gpx => true }
     assert_response :redirect
     assert_redirected_to "#{callback_url}?oauth_token=#{token.token}"
@@ -197,7 +199,7 @@ class OAuthTest < ActionDispatch::IntegrationTest
     assert_template :authorize
 
     post "/oauth/authorize",
-         :params => { :oauth_token => token.token,
+         :params => { :oauth_token => token.token, :grant => "Grant Access",
                       :allow_read_prefs => true, :allow_write_prefs => true }
     if client.callback_url
       assert_response :redirect
@@ -257,7 +259,7 @@ class OAuthTest < ActionDispatch::IntegrationTest
     assert_template :authorize
 
     post "/oauth/authorize",
-         :params => { :oauth_token => token.token,
+         :params => { :oauth_token => token.token, :grant => "Grant Access",
                       :allow_write_api => true, :allow_read_gpx => true }
     assert_response :redirect
     verifier = parse_verifier(response)
@@ -308,7 +310,7 @@ class OAuthTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_template :authorize
 
-    post "/oauth/authorize", :params => { :oauth_token => token.token }
+    post "/oauth/authorize", :params => { :oauth_token => token.token, :refuse => "Refuse Access" }
     assert_response :success
     assert_template :authorize_failure
     assert_select "p", "You have denied application #{client.name} access to your account."
@@ -324,7 +326,7 @@ class OAuthTest < ActionDispatch::IntegrationTest
     assert_nil token.authorized_at
     assert_not_nil token.invalidated_at
 
-    post "/oauth/authorize", :params => { :oauth_token => token.token }
+    post "/oauth/authorize", :params => { :oauth_token => token.token, :grant => "Grant Access" }
     assert_response :success
     assert_template :authorize_failure
     assert_select "p", "The authorization token is not valid."

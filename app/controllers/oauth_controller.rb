@@ -11,21 +11,6 @@ class OauthController < ApplicationController
     require_user
   end
 
-  def user_authorizes_token?
-    any_auth = false
-
-    @token.client_application.permissions.each do |pref|
-      if params[pref]
-        @token.write_attribute(pref, true)
-        any_auth ||= true
-      else
-        @token.write_attribute(pref, false)
-      end
-    end
-
-    any_auth
-  end
-
   def revoke
     @token = current_user.oauth_tokens.find_by :token => params[:token]
     if @token
@@ -44,7 +29,14 @@ class OauthController < ApplicationController
       @message = t "oauth.authorize_failure.invalid"
       render :action => "authorize_failure"
     elsif request.post?
-      if user_authorizes_token?
+      if params[:grant]
+        @token.client_application.permissions.each do |pref|
+          if params[pref]
+            @token.write_attribute(pref, true)
+          else
+            @token.write_attribute(pref, false)
+          end
+        end
         @token.authorize!(current_user)
         callback_url = if @token.oauth10?
                          params[:oauth_callback] || @token.client_application.callback_url
